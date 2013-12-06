@@ -633,3 +633,30 @@ void Sys_PlatformInit( void )
 		SDL_VIDEODRIVER_externallySet = qfalse;
 #endif
 }
+
+/*
+=================
+Sys_SigHandler
+=================
+*/
+void Sys_SigHandler( int signal )
+{
+	static qboolean signalcaught = qfalse;
+
+	if( signalcaught )
+	{
+		fprintf( stderr, "DOUBLE SIGNAL FAULT: Received signal %d, exiting...\n",
+			signal );
+	}
+	else
+	{
+		signalcaught = qtrue;
+		fprintf( stderr, "Received signal %d, exiting...\n", signal );
+#ifndef DEDICATED
+		CL_Shutdown();
+#endif
+		SV_Shutdown( "Signal caught (server crash)" );
+	}
+
+	Sys_Exit( 0 ); // Exit with 0 to avoid recursive signals
+}

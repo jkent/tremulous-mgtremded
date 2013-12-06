@@ -540,3 +540,19 @@ void Sys_PlatformInit( void )
 	signal( SIGIOT, Sys_SigHandler );
 	signal( SIGBUS, Sys_SigHandler );
 }
+
+/*
+=================
+Sys_SigHandler
+=================
+*/
+void Sys_SigHandler( int signum )
+{
+	fprintf( stderr, "Received signal %d, shutting down...\n", signum );
+#ifndef DEDICATED
+	CL_Shutdown();
+#endif
+	SV_Shutdown( "Signal caught (server crash)" );
+	signal( signum, SIG_DFL );
+	kill( getpid(), signum );
+}

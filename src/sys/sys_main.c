@@ -471,33 +471,6 @@ void Sys_ParseArgs( int argc, char **argv )
 
 /*
 =================
-Sys_SigHandler
-=================
-*/
-void Sys_SigHandler( int signal )
-{
-	static qboolean signalcaught = qfalse;
-
-	if( signalcaught )
-	{
-		fprintf( stderr, "DOUBLE SIGNAL FAULT: Received signal %d, exiting...\n",
-			signal );
-	}
-	else
-	{
-		signalcaught = qtrue;
-		fprintf( stderr, "Received signal %d, exiting...\n", signal );
-#ifndef DEDICATED
-		CL_Shutdown();
-#endif
-		SV_Shutdown( "Signal caught" );
-	}
-
-	Sys_Exit( 0 ); // Exit with 0 to avoid recursive signals
-}
-
-/*
-=================
 main
 =================
 */
