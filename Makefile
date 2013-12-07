@@ -336,7 +336,7 @@ endef
 # MAIN TARGETS
 #############################################################################
 
-default: release
+default: debug
 all: debug release
 
 debug:
@@ -521,7 +521,7 @@ distclean: clean
 OBJ_D_FILES=$(filter %.d,$(OBJ:%.o=%.d))
 -include $(OBJ_D_FILES)
 
-.PHONY: all clean clean2 clean-debug clean-release copyfiles \
+.PHONY: all clean clean2 clean-debug clean-release \
 	debug default distclean makedirs \
 	release targets
 

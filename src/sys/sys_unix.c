@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/time.h>
+#include <sys/resource.h>
 #include <pwd.h>
 #include <libgen.h>
 
@@ -534,6 +535,17 @@ Unix specific initialisation
 */
 void Sys_PlatformInit( void )
 {
+#ifndef NDEBUG
+	struct rlimit core_limit;
+	core_limit.rlim_cur = RLIM_INFINITY;
+	core_limit.rlim_max = RLIM_INFINITY;
+
+	if ( setrlimit( RLIMIT_CORE, &core_limit ) < 0 )
+	{
+		fprintf( stderr, "setrlimit: %s\nWarning: core dumps may be truncated or non-existant\n", strerror( errno ) );
+	}
+#endif
+
 	signal( SIGHUP, Sys_SigHandler );
 	signal( SIGQUIT, Sys_SigHandler );
 	signal( SIGTRAP, Sys_SigHandler );
