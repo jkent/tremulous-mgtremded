@@ -560,11 +560,21 @@ Sys_SigHandler
 */
 void Sys_SigHandler( int signum )
 {
+	static qboolean signalcaught = qfalse;
+
+	if ( signalcaught )
+	{
+		raise( signum );
+	}
+	signalcaught = qtrue;
+
 	fprintf( stderr, "Received signal %d, shutting down...\n", signum );
+	signal( signum, SIG_DFL );
+
 #ifndef DEDICATED
 	CL_Shutdown();
 #endif
 	SV_Shutdown( "Signal caught (server crash)" );
-	signal( signum, SIG_DFL );
-	kill( getpid(), signum );
+
+	raise( signum );
 }
