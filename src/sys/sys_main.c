@@ -142,13 +142,15 @@ void Sys_Exit( int ex )
 	SDL_Quit( );
 #endif
 
-#ifdef NDEBUG
-	exit( ex );
-#else
+#ifndef NDEBUG
 	// Cause a backtrace on error exits
-	assert( ex == 0 );
-	exit( ex );
+	if ( ex != 0 )
+	{
+		signal( SIGABRT, SIG_DFL );
+		abort( );
+	}
 #endif
+	exit( ex );
 }
 
 /*
