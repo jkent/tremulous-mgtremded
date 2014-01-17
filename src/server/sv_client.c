@@ -1107,10 +1107,12 @@ static void SV_VerifyPaks_f( client_t *cl ) {
 		} 
 		else {
 			cl->pureAuthentic = 0;
-			cl->nextSnapshotTime = -1;
-			cl->state = CS_ACTIVE;
-			SV_SendClientSnapshot( cl );
-			SV_DropClient( cl, "Unpure client detected. Invalid .PK3 files referenced!" );
+			SV_SendServerCommand( NULL, "print \"%s" S_COLOR_RED " is not using the mod.\n\"", cl->name );
+			SV_SendServerCommand( cl, "print \"\n" S_COLOR_RED "Please enable downloads." S_COLOR_WHITE " Some features of this mod may not work properly\n\"" );
+			SV_SendServerCommand( cl, "print \"until you download the qvm pack. You can enable downloads from the menu:\n\"" );
+			SV_SendServerCommand( cl, "print \"Options -> Auto Download: Yes\n\n\"" );
+			SV_SendServerCommand( cl, "print \"You can also enable it from the console using:\n\"" );
+			SV_SendServerCommand( cl, "print \"\\cl_allowDownload 1\n\n\"" );
 		}
 	}
 }
@@ -1467,12 +1469,6 @@ static void SV_UserMove( client_t *cl, msg_t *msg, qboolean delta ) {
 		// the moves can be processed normaly
 	}
 	
-	// a bad cp command was sent, drop the client
-	if (sv_pure->integer != 0 && cl->pureAuthentic == 0) {		
-		SV_DropClient( cl, "Cannot validate pure client!");
-		return;
-	}
-
 	if ( cl->state != CS_ACTIVE ) {
 		cl->deltaMessage = -1;
 		return;
